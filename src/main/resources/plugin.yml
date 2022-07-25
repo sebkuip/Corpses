@@ -1,0 +1,7 @@
+name: Corpses
+version: '${project.version}'
+main: me.sebkuip.corpses.Corpses
+api-version: 1.18
+prefix: Corpses
+authors: [ sebkuip ]
+description: A plugin that adds corpses upon death
