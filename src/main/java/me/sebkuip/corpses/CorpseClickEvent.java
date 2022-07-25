@@ -14,7 +14,10 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.plugin.Plugin;
+
+import java.util.Date;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class CorpseClickEvent implements Listener {
     private final Plugin plugin;
@@ -24,7 +27,6 @@ public class CorpseClickEvent implements Listener {
     }
 
     private void inventoryTransfer(PlayerInventory player, ItemStack[] stored) {
-        System.out.println("Transferring inventory");
         for (int i = 0; i < stored.length; i++) {
             if (stored[i] == null) {
                 continue;
@@ -35,7 +37,6 @@ public class CorpseClickEvent implements Listener {
                 player.getHolder().getWorld().dropItem(player.getHolder().getLocation(), stored[i]);
             }
         }
-        System.out.println("Done transferring");
     }
 
     @EventHandler
@@ -46,11 +47,19 @@ public class CorpseClickEvent implements Listener {
             LivingEntity entity = (LivingEntity) e;
             PersistentDataContainer pdc = entity.getPersistentDataContainer();
             UUID uuid = pdc.getOrDefault(new NamespacedKey(plugin, "owner"), DataType.UUID, new UUID(0, 0));
-            if (entity.getType() == EntityType.ZOMBIE && uuid.equals(player.getUniqueId())) {
-                player.sendRawMessage(ChatColor.RED + "You removed this corpse");
-                player.giveExp(pdc.getOrDefault(new NamespacedKey(plugin, "exp"), DataType.INTEGER, 0));
-                inventoryTransfer(player.getInventory(), pdc.get(new NamespacedKey(plugin, "inventory"), DataType.ITEM_STACK_ARRAY));
-                entity.remove();
+            int loottimer = plugin.getConfig().getInt("loot-timer");
+            if (entity.getType() == EntityType.ZOMBIE) {
+                if (uuid.equals(player.getUniqueId())) {
+                    player.sendRawMessage(ChatColor.RED + "You reclaimed this corpse");
+                    player.giveExp(pdc.getOrDefault(new NamespacedKey(plugin, "exp"), DataType.INTEGER, 0));
+                    inventoryTransfer(player.getInventory(), pdc.get(new NamespacedKey(plugin, "inventory"), DataType.ITEM_STACK_ARRAY));
+                    entity.remove();
+                } else if (loottimer != -1 && TimeUnit.MINUTES.convert(new Date().getTime() - pdc.get(new NamespacedKey(plugin, "deathtime"), DataType.DATE).getTime(), TimeUnit.MINUTES) > loottimer) {
+                    player.sendRawMessage(ChatColor.RED + "You looted this corpse");
+                    player.giveExp(pdc.getOrDefault(new NamespacedKey(plugin, "exp"), DataType.INTEGER, 0));
+                    inventoryTransfer(player.getInventory(), pdc.get(new NamespacedKey(plugin, "inventory"), DataType.ITEM_STACK_ARRAY));
+                    entity.remove();
+                }
             }
         }
     }

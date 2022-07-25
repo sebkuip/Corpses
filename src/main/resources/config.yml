@@ -1,0 +1,11 @@
+## Make a spawned corpse show the equipment of the owner
+show-equipment: true
+
+## How long (in minutes) before others are able to loot a corpse. Set to -1 to disallow looting
+loot-timer: -1
+
+## How long (in minutes) before a corpse rots away. Set to -1 to disable this behaviour
+despawn-timer: -1
+
+## Announce to the player if their corpse rotted away
+announce-rot: true
