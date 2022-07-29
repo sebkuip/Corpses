@@ -1,7 +1,11 @@
 name: Corpses
-version: '${project.version}'
+version: ${project.version}
 main: me.sebkuip.corpses.Corpses
-api-version: 1.18
+api-version: 1.19
 prefix: Corpses
 authors: [ sebkuip ]
 description: A plugin that adds corpses upon death
+commands:
+  spawncorpse:
+    description: spawn a corpse of yourself
+    usage: /<command>

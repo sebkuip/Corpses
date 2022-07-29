@@ -15,6 +15,8 @@ public final class Corpses extends JavaPlugin {
         pm.registerEvents(new DeathEventListener(this), this);
         pm.registerEvents(new CorpseClickEvent(this), this);
         ticker = new Ticker(this);
+
+        getCommand("spawncorpse").setExecutor(new CreateCommand(this));
     }
 
     @Override
